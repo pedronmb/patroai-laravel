@@ -1,0 +1,225 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+}
+
+/* Contenedor principal con la barra de navegación */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /*max-width: 800px;*/
+    height: 100%;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Barra de navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #333;
+}
+
+.nav-links a {
+    margin-right: 20px;
+    color: #e0e0e0;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    color: #007bff;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+}
+
+.nav-user #username {
+    margin-right: 20px;
+}
+
+.nav-user button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+.nav-user button:hover {
+    background-color: #0056b3;
+}
+
+/* Contenedor de la app de chat (barra lateral + chat) */
+.app-container {
+    display: flex;
+    flex: 1;
+}
+
+/* Estilos previos del chat y la barra lateral */
+.sidebar {
+    width: 200px;
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    height: 87vh; /* Asegura que la barra lateral ocupe toda la altura */
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.sidebar li {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #333;
+    color: #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sidebar li:hover {
+    background-color: #444;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #1f1f1f;
+    padding: 10px;
+    height: 87vh;
+}
+
+.chatbox {
+    padding: 20px;
+    height: 90%;
+    overflow-y: auto;
+    border-bottom: 1px solid #333;
+}
+
+.input-area {
+    display: flex;
+    padding: 10px;
+    background-color: #2a2a2a;
+}
+
+#userInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin-right: 10px;
+    background-color: #333;
+    color: white;
+}
+
+#sendButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#sendButton:hover {
+    background-color: #0056b3;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+}
+
+.bot {
+    background-color: #333;
+    color: white;
+    align-self: flex-start;
+}
+
+#newChatButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#newChatButton:hover {
+    background-color: #0056b3;
+}
+
+#chatList {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    flex-grow: 1; /* Esto permite que la lista ocupe el espacio disponible */
+    overflow-y: auto; /* Habilita el scroll vertical */
+    /*max-height: 400px;  Opcional: define una altura máxima específica */
+    height: 60vh;
+}
+
+.radio-option {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.loader {
+    border: 1em solid #f3f3f3; /* Light grey */
+    border-top: 1em solid #656565; /* Blue */
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    animation: spin 2s linear infinite;
+    margin-top: 10px;
+    margin-right: 10px;
+    display: none;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .app-container {
+    display: flex;
+    flex: 1;
+    overflow-y: auto;
+}
+
