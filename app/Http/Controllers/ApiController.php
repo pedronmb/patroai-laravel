@@ -160,28 +160,31 @@ class ApiController extends Controller
     public function messageslist(Request $request){
 
         $error = ["error", 0];
-
         if($request->has('user')){
-
             $user = $request->query('user');
-
-            
             $messages = Message::select('id','name','message')->where('user',$user)->get();
-
-            
-
-            
             $message =  json_decode($messages, true);
-
-
-
         }
         else{
             $message = $error;
         }
-
-        
-
         return response()->json($message);
+    }
+
+    public function destroy($id)
+    {
+        // Buscar el recurso por su ID
+        $recurso = Message::find($id);
+
+        // Si no se encuentra el recurso, devolver un error
+        if (!$recurso) {
+            return response()->json(['message' => 'Recurso no encontrado'], 404);
+        }
+
+        // Eliminar el recurso
+        $recurso->delete();
+
+        // Devolver una respuesta exitosa
+        return response()->json(['message' => 'Recurso eliminado correctamente'], 200);
     }
 }

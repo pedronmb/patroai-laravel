@@ -23,3 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('messages',[ApiController::class,'messages']);
 
 Route::get('messageslist',[ApiController::class,'messageslist']);
+
+Route::delete('messages/{id}', [ApiController::class, 'destroy']);
