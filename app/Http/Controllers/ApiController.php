@@ -138,6 +138,7 @@ class ApiController extends Controller
 
                     $messages->message = json_encode($oldMessages);
                     $messages->context = $message['context'];
+                    $message['id'] = $messages->id;
 
                     $messages->save();
                 }

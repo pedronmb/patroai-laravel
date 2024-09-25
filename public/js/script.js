@@ -1,6 +1,6 @@
 let chats = []; // Para almacenar los chats anteriores
 let currentChat = []; // Chat actual
-let isNewChat = false; // Verifica si es un nuevo chat
+let isNewChat = true; // Verifica si es un nuevo chat
 let idOn = 0;
 let userOn = '';
 let flagToReloadListChat = true; //flag para recargar la lista de chats de la barra lateral
@@ -64,6 +64,7 @@ function addChatToList(chat) {
     console.log(idOn);
     loadChat(chat);
     flagToReloadListChat = false;
+    isNewChat = false;
   });
 
   // Añadir evento click al botón para eliminar el chat
@@ -163,6 +164,9 @@ function sendMessage() {
     let radioValue;
     let checkInt = 0;
     console.log("Checkbox habilitado:", checkboxValue);
+    console.log("idOnAntesLlamado:", idOn);
+    console.log("flagToReloadListChat:", flagToReloadListChat);
+    console.log("isNewChat:", isNewChat);
 
     // Obtener el valor del radio button seleccionado
     const selectedRadio = document.querySelector('input[name="selected_file"]:checked');
@@ -210,11 +214,13 @@ function sendMessage() {
                 // Aquí accedes al JSON de la respuesta
                 console.log('Datos recibidos:', data);
                 appendMessage('bot', data.response);
-                idOn = data.id;
+                
                 // Ejemplo de acceso a propiedades específicas del JSON
                 //console.log('Propiedad clave1:', data.clave1);
                 //console.log('Propiedad clave2:', data.clave2);
                 loadingImage.style.display = 'none';
+                idOn = data.id;
+                console.log("idOnDespuesLlamado:", idOn);
                 //recarga la lista de chats si es un chat nuevo
                 if (flagToReloadListChat){
                     clearChatList();
@@ -229,6 +235,7 @@ function sendMessage() {
             });
 
         // Limpiar el campo de entrada
+        
         userInput.value = '';
         
     }
