@@ -246,7 +246,15 @@ function appendMessage(sender, message) {
     const chatbox = document.getElementById('chatbox');
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', sender);
-    messageElement.textContent = message;
+
+    let converter = new showdown.Converter();
+    let markdownText = message;
+
+    let htmlOutput = converter.makeHtml(markdownText);
+
+    messageElement.innerHTML = htmlOutput;
+
+    //messageElement.textContent = htmlOutput;
     chatbox.appendChild(messageElement);
 
     // Desplazar hacia abajo

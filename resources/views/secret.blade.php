@@ -7,7 +7,6 @@
         <title>Chat</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymus">
-
         <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     </head>
     <body>
@@ -71,7 +70,7 @@
                 </div>
             </div>
 
-
+        <script src="https://cdn.jsdelivr.net/npm/showdown@2/dist/showdown.min.js"></script>
         <script src="{{ asset('js/script.js') }}"></script>
     </body>
     
