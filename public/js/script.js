@@ -271,6 +271,7 @@ function saveChatToDatabase(chat) {
 window.onload = function() {
     userOn = document.getElementById('usuario').innerText;
     loadChatsFromDatabase();
+    hideAlert();
 };
 
 function toggleRadioButtons(checkbox) {
@@ -305,4 +306,16 @@ async function deleteChat(id) {
         console.error('Error en la solicitud DELETE:', error);
       }
       
+}
+
+// Mostrar el alert cuando ocurra un error
+function showAlert() {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.classList.remove('d-none');
+}
+
+// Ocultar el alert manualmente o después de corregir el error
+function hideAlert() {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.classList.add('d-none');
 }

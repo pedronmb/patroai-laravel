@@ -44,7 +44,10 @@
                     </div>
                     
                 </nav>
-
+                <div id="alertBox" class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>Danger!</strong> This alert box could indicate a dangerous or potentially negative action.
+                </div>
 
                 <div class="app-container">
                     <!-- Panel lateral para la lista de chats -->
@@ -69,9 +72,10 @@
                     </div>
                 </div>
             </div>
-
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/showdown@2/dist/showdown.min.js"></script>
         <script src="{{ asset('js/script.js') }}"></script>
+
     </body>
     
 </html>
