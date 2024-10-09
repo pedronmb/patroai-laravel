@@ -35,7 +35,7 @@
                 <div>
                     <p>¿No tienes cuenta? <a href="{{route('registro')}}">Registrate</a></p>
                 </div>
-                <button type="submit" class="btn btn-primary">Acceder</buttton>
+                <button type="submit" class="btn btn-warning">Acceder</buttton>
             </form>
         </main>
         </div>

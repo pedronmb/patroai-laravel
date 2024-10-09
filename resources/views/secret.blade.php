@@ -15,7 +15,7 @@
                 <nav class="navbar">
                     <div class="nav-links">
                         <a href="#">Inicio</a>
-                        <a href="#">Acerca de</a>
+                        <a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">Base de Datos</a>
                         <a href="#">Contacto</a>
                     </div>
                     <div class="nav-user">
@@ -26,7 +26,7 @@
                     </div>
                 </nav>
                 <nav class="navbar">
-                    <div class="nav-links">
+                    <div class="collapse" id="collapseExample">
                         
                         <label for="enable_selection">
                         <input type="checkbox" id="enable_selection" name="enable_selection" onchange="toggleRadioButtons(this)">
