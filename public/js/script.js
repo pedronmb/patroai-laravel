@@ -183,6 +183,9 @@ function sendMessage() {
         checkInt = 0;
     }
 
+    //variables de configuracion de la IA
+    let confTemperature = document.getElementById('confTemperature');
+
     if (message !== '') {
         // Agregar el mensaje del usuario al chat actual
         appendMessage('user', message);
@@ -199,7 +202,7 @@ function sendMessage() {
         }
         
         
-        fetch('http://patrocloai.zapto.org:34933/api/messages?prompt='+encodeURIComponent(message)+'&id='+idOn+'&user='+userOn+'&checkvalue='+checkInt+'&radiovalue='+radioValue)
+        fetch('http://patrocloai.zapto.org:34933/api/messages?prompt='+encodeURIComponent(message)+'&id='+idOn+'&user='+userOn+'&checkvalue='+checkInt+'&radiovalue='+radioValue+'&conftemperature='+confTemperature)
             .then(response => {
 
                 

@@ -36,6 +36,9 @@ class ApiController extends Controller
             $user = $request->query('user');
             $chekValue = $request->query('checkvalue');
             $radioValue = $request->query('radiovalue');
+            //variables de configuracion del modelo
+            $temperature = $request->query('conftemperature');
+            //$temperature = 1;
 
 
             if ($chekValue == 1){
@@ -86,14 +89,20 @@ class ApiController extends Controller
                 $data = json_encode([
                     "model" => "llama3.1",
                     "prompt" => $newPrompt,
-                    "stream" => false
+                    "stream" => false,
+                    "options" => [
+                        "temperature" => (float)$temperature
+                    ]
                 ]);
             }else{
                 $data = json_encode([
                     "model" => "llama3.1",
                     "prompt" => $prompt,
                     "stream" => false,
-                    "context" => json_decode($messages->context,true)
+                    "context" => json_decode($messages->context,true),
+                    "options" => [
+                        "temperature" => (float)$temperature
+                    ]
                 ]);
             }
             // Configurar las opciones de cURL

@@ -16,7 +16,7 @@
                     <div class="nav-links">
                         <a href="#">Inicio</a>
                         <a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">Base de Datos</a>
-                        <a href="#">Contacto</a>
+                        <a data-bs-toggle="collapse" href="#configuracion" role="button" aria-expanded="false" aria-controls="configuracion">Configuracion</a>
                     </div>
                     <div class="nav-user">
                         <div class="col-md-3 text-end">
@@ -41,6 +41,14 @@
                                 </div>
                             @endforeach
                         </div>
+                    </div>
+
+                    <div class="collapse" id="configuracion">
+                        
+                    <label for="confTemperature">Temperature:</label>
+                    <input type="number" id="confTemperature" name="confTemperature" min="0" max="2" step="0.01" value="1">
+                        
+                        
                     </div>
                     
                 </nav>
