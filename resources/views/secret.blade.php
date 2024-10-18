@@ -54,7 +54,7 @@
                 </nav>
                 <div id="alertBox" class="alert alert-danger alert-dismissible">
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <strong>Danger!</strong> This alert box could indicate a dangerous or potentially negative action.
+                    <strong>Danger!</strong> <span id="alertMessage">Message<span>
                 </div>
 
                 <div class="app-container">

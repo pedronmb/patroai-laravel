@@ -122,6 +122,7 @@ async function listOfChatBD(user) {
             .catch(error => {
                 // Manejo de errores
                 console.error('Hubo un problema con la solicitud:', error);
+                showAlert(`Hubo un problema con la solicitud:${error}`);
             });
 
     /*const chatsFromDB = [
@@ -234,6 +235,7 @@ function sendMessage() {
             .catch(error => {
                 // Manejo de errores
                 console.error('Hubo un problema con la solicitud:', error);
+                showAlert(`Hubo un problema con la solicitud:${error}`);
                 loadingImage.style.display = 'none';
             });
 
@@ -307,13 +309,17 @@ async function deleteChat(id) {
         
       } catch (error) {
         console.error('Error en la solicitud DELETE:', error);
+        showAlert(`Error en la solicitud DELETE:${error}`);
       }
       
 }
 
 // Mostrar el alert cuando ocurra un error
-function showAlert() {
+function showAlert(message) {
     const alertBox = document.getElementById('alertBox');
+    const alertMessage = document.getElementById('alertMessage');
+
+    alertMessage.textContent = message; // Insertar el mensaje dinámico
     alertBox.classList.remove('d-none');
 }
 

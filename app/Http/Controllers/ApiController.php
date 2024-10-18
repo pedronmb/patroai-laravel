@@ -91,7 +91,8 @@ class ApiController extends Controller
                     "prompt" => $newPrompt,
                     "stream" => false,
                     "options" => [
-                        "temperature" => (float)$temperature
+                        "temperature" => (float)$temperature,
+                        "num_ctx" => 4096
                     ]
                 ]);
             }else{
@@ -101,7 +102,8 @@ class ApiController extends Controller
                     "stream" => false,
                     "context" => json_decode($messages->context,true),
                     "options" => [
-                        "temperature" => (float)$temperature
+                        "temperature" => (float)$temperature,
+                        "num_ctx" => 4096
                     ]
                 ]);
             }
