@@ -199,4 +199,10 @@ class ApiController extends Controller
         // Devolver una respuesta exitosa
         return response()->json(['message' => 'Recurso eliminado correctamente'], 200);
     }
+
+    public function status(Request $request){
+
+        $message = ["status", "ok"];
+        return response()->json($message);
+    }
 }

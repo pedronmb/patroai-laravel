@@ -25,3 +25,5 @@ Route::get('messages',[ApiController::class,'messages']);
 Route::get('messageslist',[ApiController::class,'messageslist']);
 
 Route::delete('messages/{id}', [ApiController::class, 'destroy']);
+
+Route::get('status',[ApiController::class,'status']);
