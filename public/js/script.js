@@ -5,6 +5,12 @@ let idOn = 0;
 let userOn = '';
 let flagToReloadListChat = true; //flag para recargar la lista de chats de la barra lateral
 
+// Datos de usuario y contraseña
+const username = 'aquiles';
+const password = 'grecia500';
+
+// Codifica el usuario y contraseña en Base64 para el encabezado Authorization
+const credentials = btoa(`${username}:${password}`);
 
 document.getElementById('sendButton').addEventListener('click', function() {
     sendMessage();

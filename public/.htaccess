@@ -20,7 +20,38 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-AuthType Basic
-AuthName "Área Restringida"
-AuthUserFile /var/www/patroai/.htpasswd
-Require valid-user
+# Encabezados de CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Authorization, Content-Type"
+</IfModule>
+
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Excluir rutas específicas de la autenticación
+    RewriteCond %{REQUEST_URI} ^/api/status [OR]
+    RewriteCond %{REQUEST_URI} ^/api/messages [OR]
+    RewriteCond %{REQUEST_URI} ^/api/messageslist
+    RewriteRule ^ - [L]
+
+    # Otras reglas de reescritura
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Configuración de autenticación para el resto de rutas
+<IfModule mod_auth.c>
+    AuthType Basic
+    AuthName "Área Restringida"
+    AuthUserFile /var/www/patroai/.htpasswd
+    Require valid-user
+    Satisfy Any
+</IfModule>
