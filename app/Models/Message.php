@@ -14,7 +14,7 @@ class Message extends Model
     // protected $table = 'nombre_tabla';
 
     // Definir los atributos que se pueden asignar masivamente (mass assignable)
-    protected $fillable = ['name', 'user', 'message', 'context'];
+    protected $fillable = ['name', 'user', 'message', 'context', 'available_model_slug'];
 
     // Si no utilizas timestamps, deshabilítalos con:
     // public $timestamps = false;

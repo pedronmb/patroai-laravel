@@ -1,66 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PatroAI (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicación web de chat con inteligencia artificial local. Tras registrarse o iniciar sesión, el usuario accede a un panel donde conversa con un modelo servido por **Ollama**, puede guardar y recuperar conversaciones en base de datos y, opcionalmente, adjuntar **contexto desde archivos** (por ejemplo esquemas o dumps) para orientar las respuestas como si fuera un asistente sobre datos.
 
-## About Laravel
+## Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP **8.1** o superior  
+- [Composer](https://getcomposer.org/)  
+- MySQL (u otro motor compatible con Laravel; el proyecto viene configurado para MySQL en `.env.example`)  
+- [Ollama](https://ollama.com/) en ejecución en la misma máquina donde corre Laravel (por defecto el backend llama a `http://localhost:11434/api/generate`)  
+- Modelo **llama3.1** disponible en Ollama (`ollama pull llama3.1`)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Stack principal
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Laravel **10**  
+- Autenticación por sesión (registro, login, logout)  
+- API REST en `/api` para mensajes, listado y borrado de chats  
+- Interfaz del chat: Blade, Bootstrap 5, Showdown (Markdown en las respuestas)
 
-## Learning Laravel
+## Instalación
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clonar el repositorio e instalar dependencias PHP:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+   ```bash
+   composer install
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Copiar entorno y generar clave:
 
-## Laravel Sponsors
+   ```bash
+   copy .env.example .env
+   php artisan key:generate
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Configurar en `.env` la conexión a la base de datos (`DB_*`) y `APP_URL` acorde a cómo sirvas la aplicación.
 
-### Premium Partners
+4. Ejecutar migraciones:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+   ```bash
+   php artisan migrate
+   ```
 
-## Contributing
+5. Arrancar el servidor de desarrollo:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+   ```bash
+   php artisan serve
+   ```
 
-## Code of Conduct
+6. Asegúrate de que **Ollama** esté levantado y que el modelo `llama3.1` esté instalado.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Rutas web relevantes
 
-## Security Vulnerabilities
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Página de bienvenida por defecto de Laravel |
+| `/login` | Inicio de sesión |
+| `/registro` | Alta de usuario |
+| `/privada` | Chat (requiere autenticación) |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Los formularios publican en `validar-registro`, `inicia-sesion`; la sesión se cierra con `logout` (nombres de ruta: `login`, `registro`, `privada`, etc., según `routes/web.php`).
 
-## License
+## Modo “Base de datos” (contexto desde archivos)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+En la zona privada puedes activar la opción de consultar sobre archivos colocados en:
+
+`storage/app/db/`
+
+El listado de esos archivos se muestra como opciones de radio en el panel. Si los activas, el contenido del archivo elegido se antepone al prompt con una instrucción para que el modelo responda en clave de **administrador de base de datos** usando esa información.
+
+Crea la carpeta `db` dentro de `storage/app` si no existe y coloca ahí los archivos de texto que quieras usar como contexto.
+
+## API (JSON)
+
+Prefijo: `/api` (sin autenticación Sanctum en los endpoints actuales del chat; revisa seguridad si expones la app a Internet).
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/messages` | Envía `prompt`, `id`, `user`, `checkvalue`, `radiovalue`, `conftemperature` (query). Llama a Ollama y persiste/actualiza el hilo en `messages`. |
+| GET | `/api/messageslist?user=...` | Lista conversaciones del usuario (id, nombre, mensajes). |
+| DELETE | `/api/messages/{id}` | Elimina una conversación por id. |
+| GET | `/api/status` | Comprobación simple de estado. |
+
+La tabla `messages` guarda nombre, usuario, historial en JSON y el contexto de Ollama para continuar el hilo.
+
+## Frontend y URL de la API
+
+Las peticiones del chat se realizan desde `public/js/script.js`. En el repositorio pueden aparecer **URLs absolutas** apuntando a un despliegue concreto; para desarrollo local o otro dominio debes alinear esa base URL con tu `APP_URL` (por ejemplo rutas relativas como `/api/...` o la URL pública de tu instancia).
+
+Tras cambiar el JavaScript, recarga forzada del navegador si hace falta para evitar caché.
+
+## Personalización del modelo IA
+
+En `app/Http/Controllers/ApiController.php` la llamada a Ollama usa el modelo `llama3.1` y `http://localhost:11434/api/generate`. Si usas otro modelo o Ollama en otro host/puerto, ajusta esos valores en el controlador.
+
+## Licencia
+
+El esqueleto del proyecto sigue la licencia **MIT** de Laravel. El contenido propio del proyecto puede tener la licencia que definas en tu organización.

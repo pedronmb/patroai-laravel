@@ -6,6 +6,24 @@ let userOn = '';
 let flagToReloadListChat = true;
 let pendingDeleteChatId = null;
 
+function resolveApiOrigin() {
+    if (typeof window !== 'undefined' && window.APP_CONFIG && window.APP_CONFIG.apiBase) {
+        return String(window.APP_CONFIG.apiBase).replace(/\/+$/, '');
+    }
+    return '';
+}
+
+function apiAbsoluteUrl(pathWithOptionalQuery) {
+    const origin = resolveApiOrigin();
+    const normalized = pathWithOptionalQuery.startsWith('/')
+        ? pathWithOptionalQuery
+        : '/' + pathWithOptionalQuery;
+    if (origin !== '') {
+        return origin + normalized;
+    }
+    return normalized;
+}
+
 const markdownConverter = new showdown.Converter();
 
 document.getElementById('sendButton').addEventListener('click', function () {
@@ -165,7 +183,7 @@ function addChatToList(chat) {
 async function listOfChatBD(user) {
     let chatsFromDB = [];
 
-    await fetch('https://patroclo.myddns.me:34934/patroai/api/messageslist?user=' + user)
+    await fetch(apiAbsoluteUrl('/messageslist?user=' + encodeURIComponent(user)))
         .then((response) => {
             if (!response.ok) {
                 throw new Error('Error en la solicitud: ' + response.statusText);
@@ -175,7 +193,11 @@ async function listOfChatBD(user) {
         .then((data) => {
             if (Array.isArray(data)) {
                 data.forEach((item) => {
-                    chatsFromDB.push({ id: item.id, messages: JSON.parse(item.message) });
+                    chatsFromDB.push({
+                        id: item.id,
+                        messages: JSON.parse(item.message),
+                        modelSlug: item.available_model_slug || '',
+                    });
                 });
             } else {
                 console.log('La respuesta no es un array.');
@@ -189,6 +211,84 @@ async function listOfChatBD(user) {
     return chatsFromDB;
 }
 
+function syncModelSelectLockedState() {
+    const sel = document.getElementById('modelSelect');
+    if (!sel) {
+        return;
+    }
+    sel.disabled = idOn > 0;
+}
+
+function syncModelSelectorForChat(chat) {
+    const sel = document.getElementById('modelSelect');
+    if (!sel || !chat) {
+        syncModelSelectLockedState();
+        return;
+    }
+    if (chat.modelSlug) {
+        const found = [...sel.options].some((o) => o.value === chat.modelSlug);
+        if (found) {
+            sel.value = chat.modelSlug;
+        }
+    }
+    syncModelSelectLockedState();
+}
+
+async function populateModelSelect() {
+    const sel = document.getElementById('modelSelect');
+    if (!sel) {
+        return;
+    }
+
+    sel.innerHTML = '';
+    const loadingOpt = document.createElement('option');
+    loadingOpt.value = '';
+    loadingOpt.textContent = 'Cargando modelos…';
+    sel.appendChild(loadingOpt);
+    sel.disabled = true;
+
+    try {
+        const response = await fetch(apiAbsoluteUrl('/models'));
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+        const models = await response.json();
+        sel.innerHTML = '';
+        if (!Array.isArray(models) || models.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Sin modelos activos';
+            sel.appendChild(opt);
+            showAlert('No hay modelos activos en la aplicación.');
+        } else {
+            models.forEach((m) => {
+                const opt = document.createElement('option');
+                opt.value = m.slug;
+                opt.textContent = m.display_name || m.slug;
+                sel.appendChild(opt);
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        sel.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Error al cargar modelos';
+        sel.appendChild(opt);
+        showAlert('No se pudieron cargar los modelos. Revisa la consola.');
+    }
+
+    syncModelSelectLockedState();
+}
+
+function getSelectedModelSlug() {
+    const sel = document.getElementById('modelSelect');
+    if (!sel) {
+        return '';
+    }
+    return sel.value || '';
+}
+
 function loadChat(chat) {
     currentChat = chat.messages;
     const chatbox = document.getElementById('chatbox');
@@ -197,6 +297,7 @@ function loadChat(chat) {
         appendMessage(message.sender, message.message);
     });
     isNewChat = false;
+    syncModelSelectorForChat(chat);
     syncEmptyState();
 }
 
@@ -208,6 +309,7 @@ function startNewChat() {
     flagToReloadListChat = true;
     setActiveChatListItem(null);
     updateChatHeader();
+    syncModelSelectLockedState();
     syncEmptyState();
 }
 
@@ -249,6 +351,13 @@ function sendMessage() {
     const confTemperatureEl = document.getElementById('confTemperature');
     const confTemperatureVal = confTemperatureEl ? confTemperatureEl.value : '1';
 
+    const modelSlugVal = getSelectedModelSlug();
+    if (!modelSlugVal) {
+        showAlert('Selecciona un modelo de IA válido antes de enviar.');
+        loadingImage.style.display = 'none';
+        return;
+    }
+
     appendMessage('user', message);
     currentChat.push({ sender: 'user', message: message });
 
@@ -261,24 +370,35 @@ function sendMessage() {
     }
 
     fetch(
-        'https://patroclo.myddns.me:34934/patroai/api/messages?prompt=' +
-            encodeURIComponent(message) +
-            '&id=' +
-            idOn +
-            '&user=' +
-            userOn +
-            '&checkvalue=' +
-            checkInt +
-            '&radiovalue=' +
-            radioValue +
-            '&conftemperature=' +
-            encodeURIComponent(confTemperatureVal)
+        apiAbsoluteUrl(
+            '/messages?prompt=' +
+                encodeURIComponent(message) +
+                '&id=' +
+                idOn +
+                '&user=' +
+                encodeURIComponent(userOn) +
+                '&checkvalue=' +
+                checkInt +
+                '&radiovalue=' +
+                radioValue +
+                '&conftemperature=' +
+                encodeURIComponent(confTemperatureVal) +
+                '&model=' +
+                encodeURIComponent(modelSlugVal)
+        )
     )
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Error en la solicitud: ' + response.statusText);
+        .then(async (response) => {
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (_) {
+                data = {};
             }
-            return response.json();
+            if (!response.ok) {
+                const hint = typeof data.error === 'string' ? data.error : response.statusText;
+                throw new Error(hint || 'Error en la solicitud');
+            }
+            return data;
         })
         .then((data) => {
             console.log('Datos recibidos:', data);
@@ -287,6 +407,7 @@ function sendMessage() {
             idOn = data.id;
             console.log('idOnDespuesLlamado:', idOn);
             updateChatHeader();
+            syncModelSelectLockedState();
             setActiveChatListItem(idOn > 0 ? idOn : null);
             if (flagToReloadListChat) {
                 clearChatList();
@@ -321,10 +442,11 @@ function saveChatToDatabase(chat) {
     console.log('Guardando chat en la base de datos...', chat);
 }
 
-window.onload = function () {
+window.onload = async function () {
     userOn = document.getElementById('usuario').innerText;
-    loadChatsFromDatabase();
+    await populateModelSelect();
     hideAlert();
+    loadChatsFromDatabase();
     autoResizeTextarea(document.getElementById('userInput'));
     syncEmptyState();
 };
@@ -338,7 +460,7 @@ function toggleRadioButtons(checkbox) {
 
 async function deleteChatById(id) {
     try {
-        const response = await fetch(`https://patroclo.myddns.me:34934/patroai/api/messages/${id}`, {
+        const response = await fetch(apiAbsoluteUrl(`/messages/${id}`), {
             method: 'DELETE',
         });
 

@@ -44,6 +44,8 @@
                     </div>
 
                     <div class="collapse w-100" id="configuracion">
+                        <label for="modelSelect" class="me-2">Modelo:</label>
+                        <select id="modelSelect" class="form-select form-select-sm d-inline-block w-auto me-4" aria-label="Modelo de IA"></select>
                         <label for="confTemperature" class="me-2">Temperature:</label>
                         <input type="number" id="confTemperature" name="confTemperature" min="0" max="2" step="0.01" value="1">
                     </div>
@@ -126,6 +128,10 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/showdown@2/dist/showdown.min.js"></script>
+        <script>
+            window.APP_CONFIG = window.APP_CONFIG || {};
+            window.APP_CONFIG.apiBase = @json(rtrim(url('/api'), '/'));
+        </script>
         <script src="{{ asset('js/script.js') }}"></script>
 
     </body>

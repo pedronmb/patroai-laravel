@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
+use App\Models\AvailableModel;
 use App\Models\Message;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,6 +21,17 @@ class Mensaje {
 
 class ApiController extends Controller
 {
+    public function availableModels(Request $request)
+    {
+        $models = AvailableModel::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('display_name')
+            ->get(['id', 'slug', 'display_name']);
+
+        return response()->json($models);
+    }
+
     public function messages(Request $request){
 
         $error = ["error", 0];
@@ -72,6 +83,23 @@ class ApiController extends Controller
             //consulto la BD para traer los mensajes anteriores si hubieran
             $messages = Message::where('id',$id)->first();
 
+            $modelSlug = null;
+            if ($messages !== null) {
+                if ($messages->available_model_slug) {
+                    $modelSlug = $messages->available_model_slug;
+                } else {
+                    $modelSlug = $this->resolveActiveModelSlug($request->query('model'));
+                    if ($modelSlug === null) {
+                        return response()->json(['error' => 'Modelo no válido o inactivo.', 'detail' => 'model'], 422);
+                    }
+                }
+            } else {
+                $modelSlug = $this->resolveActiveModelSlug($request->query('model'));
+                if ($modelSlug === null) {
+                    return response()->json(['error' => 'Modelo no válido o inactivo.', 'detail' => 'model'], 422);
+                }
+            }
+
             //inicializo la llamada al modelo de IA
             $ch = curl_init();
 
@@ -87,7 +115,7 @@ class ApiController extends Controller
                 }
 
                 $data = json_encode([
-                    "model" => "llama3.1",
+                    "model" => $modelSlug,
                     "prompt" => $newPrompt,
                     "stream" => false,
                     "options" => [
@@ -97,7 +125,7 @@ class ApiController extends Controller
                 ]);
             }else{
                 $data = json_encode([
-                    "model" => "llama3.1",
+                    "model" => $modelSlug,
                     "prompt" => $prompt,
                     "stream" => false,
                     "context" => json_decode($messages->context,true),
@@ -137,6 +165,7 @@ class ApiController extends Controller
                     $messages->user = $user;
                     $messages->message = json_encode($allMessages);
                     $messages->context = json_encode($message['context']);
+                    $messages->available_model_slug = $modelSlug;
 
                     $messages->save();
                     $message['id'] = $messages->id;
@@ -149,6 +178,9 @@ class ApiController extends Controller
 
                     $messages->message = json_encode($oldMessages);
                     $messages->context = $message['context'];
+                    if (!$messages->available_model_slug) {
+                        $messages->available_model_slug = $modelSlug;
+                    }
                     $message['id'] = $messages->id;
 
                     $messages->save();
@@ -168,13 +200,12 @@ class ApiController extends Controller
         return response()->json($message);
     }
 
-
     public function messageslist(Request $request){
 
         $error = ["error", 0];
         if($request->has('user')){
             $user = $request->query('user');
-            $messages = Message::select('id','name','message')->where('user',$user)->get();
+            $messages = Message::select('id','name','message','available_model_slug')->where('user',$user)->get();
             $message =  json_decode($messages, true);
         }
         else{
@@ -204,5 +235,21 @@ class ApiController extends Controller
 
         $message = ["status", "ok"];
         return response()->json($message);
+    }
+
+    private function resolveActiveModelSlug(?string $requestedSlug): ?string
+    {
+        if ($requestedSlug === null || trim($requestedSlug) === '') {
+            return AvailableModel::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('display_name')
+                ->value('slug');
+        }
+
+        return AvailableModel::query()
+            ->where('slug', $requestedSlug)
+            ->where('is_active', true)
+            ->value('slug');
     }
 }
