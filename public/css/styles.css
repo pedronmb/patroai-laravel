@@ -38,6 +38,7 @@
 
 html {
     height: 100%;
+    height: 100dvh;
 }
 
 body {
@@ -45,20 +46,21 @@ body {
     background-color: var(--color-bg);
     color: var(--color-text);
     margin: 0;
-    min-height: 100%;
+    height: 100%;
+    max-height: 100dvh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
 }
 
-/* Main shell */
+/* Main shell: ocupa solo el alto del viewport; el scroll va a paneles internos */
 .main-container {
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-height: 0;
     width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
     background-color: var(--color-surface);
     overflow: hidden;
 }
@@ -73,6 +75,11 @@ body {
     padding: var(--space-3) var(--space-5);
     background-color: var(--color-surface-2);
     border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+#alertBox {
+    flex-shrink: 0;
 }
 
 .app-sub-nav {
@@ -132,6 +139,18 @@ body {
     --bs-offcanvas-width: min(320px, 92vw);
 }
 
+.sidebar-offcanvas.offcanvas {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar-offcanvas.offcanvas {
+        height: 100dvh;
+        max-height: 100dvh;
+    }
+}
+
 @media (min-width: 992px) {
     .sidebar-offcanvas.offcanvas-lg {
         position: relative;
@@ -140,19 +159,31 @@ body {
         flex-shrink: 0;
         width: 280px;
         max-width: 280px;
+        min-height: 0;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
         border-right: 1px solid var(--color-border);
         background-color: var(--color-surface-2);
     }
+}
 
-    .sidebar-offcanvas.offcanvas-lg .offcanvas-body {
-        overflow-y: auto;
-    }
+/* Sidebar (móvil y escritorio): lista con scroll, botón fijo abajo */
+.sidebar-offcanvas .offcanvas-body.sidebar {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand {
+    flex-shrink: 0;
 }
 
 .sidebar {
     background-color: transparent;
     padding: var(--space-4);
-    height: 100%;
     min-height: 0;
 }
 
@@ -175,8 +206,10 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
-    overflow-y: auto;
+    flex: 1 1 auto;
     min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .chat-list-item {
@@ -239,6 +272,7 @@ body {
 
 .btn-new-chat {
     width: 100%;
+    flex-shrink: 0;
     margin-top: var(--space-3);
     padding: var(--space-3) var(--space-4);
     font-family: inherit;
@@ -346,8 +380,10 @@ body {
 }
 
 .chatbox {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: var(--space-6);
     padding-bottom: var(--space-8);
     display: flex;
@@ -355,6 +391,7 @@ body {
     gap: var(--space-4);
     align-items: stretch;
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 .chatbox:focus-visible {
